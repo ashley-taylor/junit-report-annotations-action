@@ -14,7 +14,7 @@ const fs = require('fs');
     const globber = await glob.create(path, {followSymbolicLinks: false});
 
     for await (const file of globber.globGenerator()) {
-        const data = await fs.readFile(file);
+        const data = await fs.promises.readFile(file);
         var json = parser.toJson(data);
         console.log("to json ->", json);
     }
