@@ -1,0 +1,25 @@
+{
+  "name": "junit-report-annotations-action",
+  "version": "1.0.0",
+  "description": "Create an annotation of the build information and also list first n failed tests as seporate annotations",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashley-taylor/junit-report-annotations-action.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashley-taylor/junit-report-annotations-action/issues"
+  },
+  "homepage": "https://github.com/ashley-taylor/junit-report-annotations-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.3",
+    "@actions/github": "^2.1.1",
+    "@actions/glob": "^0.1.0"
+  }
+}
