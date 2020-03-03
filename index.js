@@ -3,7 +3,7 @@ const github = require('@actions/github');
 const glob = require('@actions/glob');
 const parser = require('xml2json');
 const { Octokit } = require('@octokit/rest');
-
+const fs = require('fs');
 
 (async () => {
     try {
