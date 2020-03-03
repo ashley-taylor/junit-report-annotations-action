@@ -15,5 +15,5 @@ inputs:
     default: 10
 runs:
   using: 'node12'
-  main: 'index.js'
+  main: 'empty.js'
   post: 'index.js'
