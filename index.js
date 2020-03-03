@@ -19,7 +19,6 @@ const annotation = {
   message: `[500] failure`,
 };
 
-annotations.push(annotation);
 
 (async () => {
     try {
