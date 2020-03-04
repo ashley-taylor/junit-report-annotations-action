@@ -35,7 +35,7 @@ const annotation = {
         const octokit = new github.GitHub(accessToken);
         const req = {
         ...github.context.repo,
-        ref: github.sha
+        ref: github.context.sha
         }
         console.log(req)
         const res = await octokit.checks.listForRef(req);
