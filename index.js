@@ -25,23 +25,34 @@ const annotation = {
         
         const globber = await glob.create(path, {followSymbolicLinks: false});
 
+        let numTests = 0;
+        let numSkipped = 0;
+        let numFailed = 0;
+        let numErrored = 0;
+        let testDuration = 0;
         for await (const file of globber.globGenerator()) {
             const data = await fs.promises.readFile(file);
             var json = parser.toJson(data);
-            console.log("to json ->", json);
+            if(json.testsuite) {
+                const testsuite = json.testsuite;
+                time +=  testsuite.time;
+                numTests +=  testsuite.tests;
+                numErrored +=  testsuite.errors;
+                numFailed +=  testsuite.failures;
+                numSkipped +=  testsuite.skipped;
+            }
+            console.log("to json ->", json.testsuite);
         }
 
-        console.log(github)
         const octokit = new github.GitHub(accessToken);
         const req = {
         ...github.context.repo,
         ref: github.context.sha
         }
-        console.log(req)
         const res = await octokit.checks.listForRef(req);
-        console.log(res)
+        console.log(JSON.stringify(res))
     
-        const check_run_id = res.data.check_runs.filter(check => check.name === check_name)[0].id
+        const check_run_id = res.data.check_runs.filter(check => check.name === github.context.workflow)[0].id
     
         const update_req = {
         ...github.context.repo,
