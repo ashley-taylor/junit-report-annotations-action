@@ -31,7 +31,7 @@ const annotation = {
             console.log("to json ->", json);
         }
 
-
+        console.log(github)
         const octokit = new github.GitHub(accessToken);
         const req = {
         ...github.context.repo,
