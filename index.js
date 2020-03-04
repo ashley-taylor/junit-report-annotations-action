@@ -40,8 +40,12 @@ const annotation = {
                 numErrored +=  testsuite.errors;
                 numFailed +=  testsuite.failures;
                 numSkipped +=  testsuite.skipped;
+
+                for(const testcase of testsuite.testcase) {
+                    // if(testcase.fai)
+                }
             }
-            console.log("to json ->", json.testsuite);
+            console.log("to json ->", json);
         }
 
         const octokit = new github.GitHub(accessToken);
@@ -49,10 +53,11 @@ const annotation = {
         ...github.context.repo,
         ref: github.context.sha
         }
+        console.log(github)
         const res = await octokit.checks.listForRef(req);
         console.log(JSON.stringify(res))
     
-        const check_run_id = res.data.check_runs.filter(check => check.name === github.context.workflow)[0].id
+        const check_run_id = res.data.check_runs.filter(check => check.name === 'build')[0].id
     
         const update_req = {
         ...github.context.repo,
