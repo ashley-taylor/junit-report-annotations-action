@@ -4,10 +4,8 @@ const glob = require('@actions/glob');
 const parser = require('xml2json');
 const fs = require('fs');
 
-const {
-    GITHUB_ACTION, GITHUB_EVENT_PATH, GITHUB_SHA, GITHUB_TOKEN, GITHUB_WORKSPACE, RUN_DIR,
-  } = process.env;
-console.log(GITHUB_TOKEN)
+
+
 const annotation_level = 'failure';
 const annotation = {
   path: 'test',
@@ -52,7 +50,7 @@ const annotation = {
             console.log("to json ->", json.testsuite);
         }
 
-        const octokit = new github.GitHub(GITHUB_TOKEN);
+        const octokit = new github.GitHub(accessToken);
         const req = {
         ...github.context.repo,
         ref: github.context.sha
