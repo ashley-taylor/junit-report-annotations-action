@@ -55,7 +55,7 @@ const fs = require('fs');
     
         const check_run_id = res.data.check_runs.filter(check => check.name === 'build')[0].id
     
-        const annotation_level = numFailed + numErrored > 0 ?'failure': 'success';
+        const annotation_level = numFailed + numErrored > 0 ?'failure': 'notice';
         const annotation = {
             path: 'test',
             start_line: 0,
