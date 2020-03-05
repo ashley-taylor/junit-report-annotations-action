@@ -38,10 +38,12 @@ const fs = require('fs');
                 numSkipped +=  testsuite.skipped;
 
                 for(const testcase of testsuite.testcase) {
-                    console.log(testcase)
+                    if(testcase.failure) {
+
+                    }
+                    
                 }
             }
-            console.log("to json ->", json);
         }
 
         const octokit = new github.GitHub(accessToken);
@@ -49,15 +51,13 @@ const fs = require('fs');
         ...github.context.repo,
         ref: github.context.sha
         }
-        console.log(github)
         const res = await octokit.checks.listForRef(req);
-        console.log(JSON.stringify(res))
     
         const check_run_id = res.data.check_runs.filter(check => check.name === 'build')[0].id
     
         const annotation_level = numFailed + numErrored > 0 ?'failure': 'successful';
         const annotation = {
-            path: '',
+            path: 'test',
             start_line: 0,
             end_line: 0,
             start_column: 0,
@@ -85,12 +85,7 @@ const fs = require('fs');
                 annotations: [annotation, ...anotations]
             }
         }
-
-
-    
-        console.log(update_req)
         await octokit.checks.update(update_req);
-
     } catch (error) {
    		core.setFailed(error.message);
     }
