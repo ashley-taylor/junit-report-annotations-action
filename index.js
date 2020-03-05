@@ -57,6 +57,11 @@ const fs = require('fs');
     
         const annotation_level = numFailed + numErrored > 0 ?'failure': 'successful';
         const annotation = {
+            path: '',
+            start_line: 0,
+            end_line: 0,
+            start_column: 0,
+            end_column: 0,
             annotation_level,
             message: `Junit Results ran ${numTests} in ${testDuration} seconds ${numErrored} Errored, ${numFailed} Failed, ${numSkipped} Skipped`,
           };
