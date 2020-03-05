@@ -31,7 +31,7 @@ const fs = require('fs');
             var json = JSON.parse(parser.toJson(data));
             if(json.testsuite) {
                 const testsuite = json.testsuite;
-                time +=  testsuite.time;
+                testDuration +=  testsuite.time;
                 numTests +=  testsuite.tests;
                 numErrored +=  testsuite.errors;
                 numFailed +=  testsuite.failures;
