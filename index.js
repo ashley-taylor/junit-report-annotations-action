@@ -31,11 +31,11 @@ const fs = require('fs');
             var json = JSON.parse(parser.toJson(data));
             if(json.testsuite) {
                 const testsuite = json.testsuite;
-                testDuration +=  testsuite.time;
-                numTests +=  testsuite.tests;
-                numErrored +=  testsuite.errors;
-                numFailed +=  testsuite.failures;
-                numSkipped +=  testsuite.skipped;
+                testDuration +=  Number(testsuite.time);
+                numTests +=  Number(testsuite.tests);
+                numErrored +=  Number(testsuite.errors);
+                numFailed +=  Number(testsuite.failures);
+                numSkipped +=  Number(testsuite.skipped);
 
                 for(const testcase of testsuite.testcase) {
                     if(testcase.failure) {
