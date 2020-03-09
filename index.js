@@ -37,11 +37,19 @@ const fs = require('fs');
                 numFailed +=  Number(testsuite.failures);
                 numSkipped +=  Number(testsuite.skipped);
 
-                for(const testcase of testsuite.testcase) {
+                testFunction = testcase => {
                     if(testcase.failure) {
+                        //add
+                    }      
+                }
 
+                if(Array.isArray(testsuite.testcase)) {
+                    for(const testcase of testsuite.testcase) {
+                        testFunction(testcase)
                     }
-                    
+                }else {
+                    //single test
+                    testFunction(testsuite.testcase)
                 }
             }
         }
