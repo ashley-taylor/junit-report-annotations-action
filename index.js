@@ -39,6 +39,7 @@ const fs = require('fs');
 
                 testFunction = testcase => {
                     if(testcase.failure) {
+                        console.log(testcase)
                         //add
                     }      
                 }
