@@ -16,6 +16,10 @@ inputs:
     description: 'max number of failed tests to include'
     require: true
     default: 10
+  testSrcPath: 
+    description: 'path to test source'
+    required: true
+    default: 'src/test/java/'
 runs:
   using: 'node12'
   main: 'index.js'

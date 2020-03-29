@@ -15,7 +15,7 @@ const fs = require('fs');
         const includeSummary = core.getInput('includeSummary');
         const numFailures = core.getInput('numFailures');
         const accessToken = core.getInput('access-token');
-        
+        const testSrcPath = core.getInput('testSrcPath');
         const globber = await glob.create(path, {followSymbolicLinks: false});
 
         let numTests = 0;
@@ -25,6 +25,7 @@ const fs = require('fs');
         let testDuration = 0;
 
         let anotations = [];
+       
 
         for await (const file of globber.globGenerator()) {
             const data = await fs.promises.readFile(file);
@@ -37,20 +38,49 @@ const fs = require('fs');
                 numFailed +=  Number(testsuite.failures);
                 numSkipped +=  Number(testsuite.skipped);
 
-                testFunction = testcase => {
+                testFunction = async testcase => {
                     if(testcase.failure) {
                         console.log(testcase)
+
+                        if(annotations.length < numFailures) {
+                            const klass = testcase.classname.replace(new RegExp('$.*'), '').replace('.', '/');
+                            const path = `${testSrcPath}${klass}.java`
+
+                            const file = await fs.promises.readFile(path);
+                            //TODO: make this better won't deal with methods with arguments etc
+                            
+                            let line = 0;
+                            const lines = file.split('\n')
+                                for(let i = 0; i < lines.length; i++) {
+                                if(lines[i].indexOf(testcase.name) >= 0) {
+                                    line = i;
+                                    break;
+                                }
+                            }
+                            
+
+
+                            annotations.push({
+                                path: path,
+                                start_line: line,
+                                end_line: line,
+                                start_column: 0,
+                                end_column: 0,
+                                annotation_level: 'failure',
+                                message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
+                              });
+                        }
                         //add
                     }      
                 }
 
                 if(Array.isArray(testsuite.testcase)) {
                     for(const testcase of testsuite.testcase) {
-                        testFunction(testcase)
+                        await testFunction(testcase)
                     }
                 }else {
                     //single test
-                    testFunction(testsuite.testcase)
+                    await testFunction(testsuite.testcase)
                 }
             }
         }
