@@ -3,14 +3,9 @@ Create an annotation of the build information and also list first n failed tests
 
 ## Example
 ```
-    - name: Name of branch
-      id: branch
-      uses: ashley-taylor/junit-report-annotations-action@v1.0
+    - uses: ashley-taylor/junit-report-annotations-action@v1.0
+      if: always()
       with:
-        value: ${{ github.ref }}
-        regex: ".*/"
-        replacement: ""
-    - name: branch
-      run: echo "${{ steps.branch.outputs.value }}"
+        access-token: ${{ secrets.GITHUB_TOKEN }}
 ``` 
    
