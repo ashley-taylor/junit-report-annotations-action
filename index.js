@@ -47,7 +47,7 @@ const fs = require('fs');
 
                             const file = await fs.promises.readFile(path);
                             //TODO: make this better won't deal with methods with arguments etc
-                            
+                            console.log(file)
                             let line = 0;
                             const lines = file.split('\n')
                                 for(let i = 0; i < lines.length; i++) {
