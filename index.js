@@ -37,13 +37,12 @@ const fs = require('fs');
                 numErrored +=  Number(testsuite.errors);
                 numFailed +=  Number(testsuite.failures);
                 numSkipped +=  Number(testsuite.skipped);
-
                 testFunction = async testcase => {
                     if(testcase.failure) {
                         console.log(testcase)
 
                         if(annotations.length < numFailures) {
-                            const klass = testcase.classname.replace(new RegExp('$.*'), '').replace('.', '/');
+                            const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
                             const path = `${testSrcPath}${klass}.java`
 
                             const file = await fs.promises.readFile(path);
