@@ -45,7 +45,7 @@ const fs = require('fs');
                             const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
                             const path = `${testSrcPath}${klass}.java`
 
-                            const file = await fs.promises.readFile(path);
+                            const file = await fs.promises.readFile(path, {encoding: 'utf-8'});
                             //TODO: make this better won't deal with methods with arguments etc
                             console.log(file)
                             let line = 0;
