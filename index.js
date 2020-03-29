@@ -39,15 +39,12 @@ const fs = require('fs');
                 numSkipped +=  Number(testsuite.skipped);
                 testFunction = async testcase => {
                     if(testcase.failure) {
-                        console.log(testcase)
-
                         if(annotations.length < numFailures) {
                             const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
                             const path = `${testSrcPath}${klass}.java`
 
                             const file = await fs.promises.readFile(path, {encoding: 'utf-8'});
                             //TODO: make this better won't deal with methods with arguments etc
-                            console.log(file)
                             let line = 0;
                             const lines = file.split('\n')
                                 for(let i = 0; i < lines.length; i++) {
@@ -56,9 +53,6 @@ const fs = require('fs');
                                     break;
                                 }
                             }
-                            
-
-
                             annotations.push({
                                 path: path,
                                 start_line: line,
