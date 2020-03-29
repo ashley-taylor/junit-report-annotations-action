@@ -24,7 +24,7 @@ const fs = require('fs');
         let numErrored = 0;
         let testDuration = 0;
 
-        let anotations = [];
+        let annotations = [];
        
 
         for await (const file of globber.globGenerator()) {
@@ -121,7 +121,7 @@ const fs = require('fs');
             output: {
                 title: "Junit Results",
                 summary: `Num passed etc`,
-                annotations: [annotation, ...anotations]
+                annotations: [annotation, ...annotations]
             }
         }
         await octokit.checks.update(update_req);
