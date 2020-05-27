@@ -13,7 +13,9 @@ A demonstration is available here
 https://github.com/ashley-taylor/junit-report-annotations-action-example
 
 On a succesful run will get a summary like
+
 ![Pass](/../images/pass.png?raw=true "Pass")
 
 On a failed run will get a image like this
+
 ![Fail](/../images/fail.png?raw=true "Fail")
