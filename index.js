@@ -14,7 +14,7 @@ const fs = require('fs');
         const path = core.getInput('path');
         const includeSummary = core.getInput('includeSummary');
         const numFailures = core.getInput('numFailures');
-        const accessToken = core.getInput('access-token');
+        const accessToken = process.env.ACTIONS_RUNTIME_TOKEN
         const testSrcPath = core.getInput('testSrcPath');
         const globber = await glob.create(path, {followSymbolicLinks: false});
 
@@ -84,9 +84,11 @@ const fs = require('fs');
         ref: github.context.sha
         }
         const res = await octokit.checks.listForRef(req);
+        const jobName = process.env.GITHUB_JOB
         console.log("dump");
         console.log(JSON.stringify(process.env));
-
+    
+        console.log(JSON.stringify(res.data.check_runs))
         const check_run_id = res.data.check_runs.filter(check => check.name === github.job)[0].id
     
         const annotation_level = numFailed + numErrored > 0 ?'failure': 'notice';
