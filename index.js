@@ -88,7 +88,7 @@ const fs = require('fs');
 
         const check_run_id = res.data.check_runs.filter(check => check.name === jobName)[0].id
         console.log(check_run_id)
-        console.log(JSON.stringify(process.env)
+        console.log(JSON.stringify(process.env))
         const annotation_level = numFailed + numErrored > 0 ?'failure': 'notice';
         const annotation = {
             path: 'test',
