@@ -84,8 +84,9 @@ const fs = require('fs');
         ref: github.context.sha
         }
         const res = await octokit.checks.listForRef(req);
-        
-        const check_run_id = res.data.check_runs.filter(check => check.name === github)[0].id
+        console.log(JSON.stringify(github));
+
+        const check_run_id = res.data.check_runs.filter(check => check.name === github.job)[0].id
     
         const annotation_level = numFailed + numErrored > 0 ?'failure': 'notice';
         const annotation = {
