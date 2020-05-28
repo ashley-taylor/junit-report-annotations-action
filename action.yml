@@ -1,5 +1,8 @@
 name: 'Junit Report to Annotations'
 description: 'Create an annotation of the test run summaryand also list first n failed tests as seporate annotations'
+branding:
+  icon: 'box'  
+  color: 'green'
 inputs:
   access-token:
     description: 'github token'
