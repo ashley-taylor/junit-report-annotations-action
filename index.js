@@ -86,11 +86,13 @@ const fs = require('fs');
         const res = await octokit.checks.listForRef(req);
         const jobName = process.env.GITHUB_JOB
 
-        const check_run_id = res.data.check_runs.find(check => check.name === jobName).id
-        console.log(check_run_id)
-        console.log(JSON.stringify(res.data.check_runs))
-        console.log(JSON.stringify(process.env))
-        res.data.check_runs
+        const checkRun = res.data.check_runs.find(check => check.name === jobName)
+        if(!checkRun) {
+            console.log(JSON.stringify(process.env))
+            console.log(JSON.stringify(res.data.check_runs))
+        }
+        const check_run_id = checkRun.id
+
         const annotation_level = numFailed + numErrored > 0 ?'failure': 'notice';
         const annotation = {
             path: 'test',
