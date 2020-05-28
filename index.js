@@ -14,7 +14,7 @@ const fs = require('fs');
         const path = core.getInput('path');
         const includeSummary = core.getInput('includeSummary');
         const numFailures = core.getInput('numFailures');
-        const accessToken = process.env.ACTIONS_RUNTIME_TOKEN
+        const accessToken = core.getInput('access-token');
         const testSrcPath = core.getInput('testSrcPath');
         const globber = await glob.create(path, {followSymbolicLinks: false});
 
