@@ -41,15 +41,15 @@ const path = require("path");
                     if(testcase.failure) {
                         if(annotations.length < numFailures) {
                             const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
-                            const path = `${testSrcPath}${klass}.java`
+                            const filePath = `${testSrcPath}${klass}.java`
 
-                            const fullPath = path.resolve(path)
+                            const fullPath = path.resolve(filePath)
                             
                             console.log(fullPath)
                             console.warn("51:33  warning  does it auto pick up this syntax")
 
                             
-                            const file = await fs.promises.readFile(path, {encoding: 'utf-8'});
+                            const file = await fs.promises.readFile(filePath, {encoding: 'utf-8'});
                             //TODO: make this better won't deal with methods with arguments etc
                             let line = 0;
                             const lines = file.split('\n')
@@ -60,7 +60,7 @@ const path = require("path");
                                 }
                             }
                             annotations.push({
-                                path: path,
+                                path: filePath,
                                 start_line: line,
                                 end_line: line,
                                 start_column: 0,
