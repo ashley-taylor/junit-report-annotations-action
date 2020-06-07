@@ -47,6 +47,7 @@ const path = require("path");
                             
                             console.log(fullPath)
                             console.warn("51:33  warning  does it auto pick up this syntax")
+
                             
                             const file = await fs.promises.readFile(path, {encoding: 'utf-8'});
                             //TODO: make this better won't deal with methods with arguments etc
