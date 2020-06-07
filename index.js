@@ -3,7 +3,7 @@ const github = require('@actions/github');
 const glob = require('@actions/glob');
 const parser = require('xml2json');
 const fs = require('fs');
-
+const path = require("path");
 
 
 
@@ -43,6 +43,11 @@ const fs = require('fs');
                             const klass = testcase.classname.replace(/$.*/g, '').replace(/\./g, '/');
                             const path = `${testSrcPath}${klass}.java`
 
+                            const fullPath = path.resolve(path)
+                            
+                            console.log(fullPath)
+                            console.log("##[warning]  51:33  warning  does it auto pick up this syntax")
+                            
                             const file = await fs.promises.readFile(path, {encoding: 'utf-8'});
                             //TODO: make this better won't deal with methods with arguments etc
                             let line = 0;
