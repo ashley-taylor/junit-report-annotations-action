@@ -11,12 +11,12 @@ const path = require("path");
 
 (async () => {
     try {
-        const path = core.getInput('path');
+        const inputPath = core.getInput('path');
         const includeSummary = core.getInput('includeSummary');
         const numFailures = core.getInput('numFailures');
         const accessToken = core.getInput('access-token');
         const testSrcPath = core.getInput('testSrcPath');
-        const globber = await glob.create(path, {followSymbolicLinks: false});
+        const globber = await glob.create(inputPath, {followSymbolicLinks: false});
 
         let numTests = 0;
         let numSkipped = 0;
