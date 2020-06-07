@@ -45,8 +45,8 @@ const path = require("path");
 
                             const fullPath = path.resolve(filePath)
                             
-                            console.log(fullPath)
-                            console.warn("##[warning] 51:33  warning  does it auto pick up this syntax")
+                            
+                            
 
                             
                             const file = await fs.promises.readFile(filePath, {encoding: 'utf-8'});
@@ -59,6 +59,10 @@ const path = require("path");
                                     break;
                                 }
                             }
+                            console.info(`::notice file=${filePath},line=${line},col=0::Junit test ${testcase.name} failed ${testcase.failure.message}`)
+                            console.info(`::debug file=${filePath},line=${line},col=0::Junit test ${testcase.name} failed ${testcase.failure.message}`)
+
+                            console.info(`::warning file=${filePath},line=${line},col=0::Junit test ${testcase.name} failed ${testcase.failure.message}`)
                             annotations.push({
                                 path: filePath,
                                 start_line: line,
