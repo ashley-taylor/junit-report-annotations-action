@@ -45,7 +45,7 @@ const path = require("path");
                 followSymbolicLinks: false,
               });
               let filePath;
-              for (const file of filePaths.globGenerator()) {
+              for await (const file of filePaths.globGenerator()) {
                 filePath = file;
               }
 
