@@ -40,32 +40,34 @@ const path = require("path");
               const klass = testcase.classname
                 .replace(/$.*/g, "")
                 .replace(/\./g, "/");
-              const filePath = `${testSrcPath}${klass}.java`;
-
-              const fullPath = path.resolve(filePath);
-
-              const file = await fs.promises.readFile(filePath, {
-                encoding: "utf-8",
+              const filePathGlob = `${testSrcPath}${klass}.*`;
+              const filePaths = await glob.create(filePath, {
+                followSymbolicLinks: false,
               });
-              //TODO: make this better won't deal with methods with arguments etc
-              let line = 0;
-              const lines = file.split("\n");
-              for (let i = 0; i < lines.length; i++) {
-                if (lines[i].indexOf(testcase.name) >= 0) {
-                  line = i;
-                  break;
-                }
+              let filePath;
+              for (const file of filePaths.globGenerator()) {
+                filePath = file;
               }
-              console.info(
-                `::notice file=${filePath},line=${line}::Junit test ${testcase.name} failed ${testcase.failure.message}`
-              );
-              console.info(
-                `::debug file=${filePath},line=${line}::Junit test ${testcase.name} failed ${testcase.failure.message}`
-              );
 
-              console.info(
-                `::warning file=${filePath},line=${line}::Junit test ${testcase.name} failed ${testcase.failure.message}`
-              );
+              let line = 0;
+              if (filePath !== undefined) {
+                const fullPath = path.resolve(filePath);
+
+                const file = await fs.promises.readFile(filePath, {
+                  encoding: "utf-8",
+                });
+                //TODO: make this better won't deal with methods with arguments etc
+                const lines = file.split("\n");
+                for (let i = 0; i < lines.length; i++) {
+                  if (lines[i].indexOf(testcase.name) >= 0) {
+                    line = i;
+                    break;
+                  }
+                }
+              } else {
+                //fall back so see something
+                filePath = `${testSrcPath}${klass}`;
+              }
               annotations.push({
                 path: filePath,
                 start_line: line,
@@ -76,7 +78,6 @@ const path = require("path");
                 message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
               });
             }
-            //add
           }
         };
 
@@ -91,23 +92,6 @@ const path = require("path");
       }
     }
 
-    const octokit = new github.GitHub(accessToken);
-    const req = {
-      ...github.context.repo,
-      ref: github.context.sha,
-    };
-    const res = await octokit.checks.listForRef(req);
-    const jobName = process.env.GITHUB_JOB;
-
-    const checkRun = res.data.check_runs.find(
-      (check) => check.name === jobName
-    );
-    if (!checkRun) {
-      console.log(JSON.stringify(process.env));
-      console.log(JSON.stringify(res.data.check_runs));
-    }
-    const check_run_id = checkRun.id;
-
     const annotation_level = numFailed + numErrored > 0 ? "failure" : "notice";
     const annotation = {
       path: "test",
@@ -118,26 +102,49 @@ const path = require("path");
       annotation_level,
       message: `Junit Results ran ${numTests} in ${testDuration} seconds ${numErrored} Errored, ${numFailed} Failed, ${numSkipped} Skipped`,
     };
-    // const annotation = {
-    //   path: 'test',
-    //   start_line: 1,
-    //   end_line: 1,
-    //   start_column: 2,
-    //   end_column: 2,
-    //   annotation_level,
-    //   message: `[500] failure`,
-    // };
 
-    const update_req = {
-      ...github.context.repo,
-      check_run_id,
-      output: {
-        title: "Junit Results",
-        summary: `Num passed etc`,
-        annotations: [annotation, ...annotations],
-      },
-    };
-    await octokit.checks.update(update_req);
+    annotations = [annotation, ...annotations];
+    if (annotation_level === "failure") {
+      //can just log these
+      for (const annotation of annotations) {
+        console.info(
+          `::warning file=${annotation.path},line=${annotation.start_line}::${annotation.message}`
+        );
+      }
+    } else {
+      const octokit = new github.GitHub(accessToken);
+      const req = {
+        ...github.context.repo,
+        ref: github.context.sha,
+      };
+      const res = await octokit.checks.listForRef(req);
+      const jobName = process.env.GITHUB_JOB;
+
+      const checkRun = res.data.check_runs.find(
+        (check) => check.name === jobName
+      );
+      if (!checkRun) {
+        console.log(
+          "Junit tests result passed but can not identify test suite."
+        );
+        console.log(
+          "Can happen when performing a pull request from a forked repository."
+        );
+        return;
+      }
+      const check_run_id = checkRun.id;
+
+      const update_req = {
+        ...github.context.repo,
+        check_run_id,
+        output: {
+          title: "Junit Results",
+          summary: "Num passed etc",
+          annotations,
+        },
+      };
+      await octokit.checks.update(update_req);
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
