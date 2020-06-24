@@ -3,7 +3,7 @@ Create an annotation of the build information and also list first n failed tests
 
 ## Example
 ```
-    - uses: ashley-taylor/junit-report-annotations-action@v1.1
+    - uses: ashley-taylor/junit-report-annotations-action@1.1
       if: always()
       with:
         access-token: ${{ secrets.GITHUB_TOKEN }}
