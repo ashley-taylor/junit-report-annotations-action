@@ -41,7 +41,7 @@ const path = require("path");
                 .replace(/$.*/g, "")
                 .replace(/\./g, "/");
               const filePathGlob = `${testSrcPath}${klass}.*`;
-              const filePaths = await glob.create(filePath, {
+              const filePaths = await glob.create(filePathGlob, {
                 followSymbolicLinks: false,
               });
               let filePath;
