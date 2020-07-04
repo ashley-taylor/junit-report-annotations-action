@@ -38,6 +38,28 @@ describe('find test location', () => {
             expect(line).toBe(3);
         });
     });
+
+    describe('given multiple gradle modules', () => {
+        beforeAll(async () => {
+            testReportFile = resolve("very_long_module1/build/test-results/test/TEST-dummy.xml");
+            testCase = {
+                classname: "org.dummy.ClassTest",
+                name: "methodTest"
+            };
+
+            await addFile('src/main/java/org/dummy/ClassTest.java', '');
+            await addFile('very_long_module1/src/main/java/org/dummy/ClassTest.java', '');
+            await addFile('module2/src/main/java/org/dummy/ClassTest.java', '');
+        });
+
+        afterAll(clearFiles);
+
+        it('should find path of the class in the good module', async () => {
+            let {filePath, line} = await index.findTestLocation(testReportFile, testCase);
+
+            expect(filePath).toBe(resolve('very_long_module1/src/main/java/org/dummy/ClassTest.java'));
+        });
+    });
 });
 
 async function addFile(filePath, content) {
