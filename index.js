@@ -37,37 +37,7 @@ const path = require("path");
         testFunction = async (testcase) => {
           if (testcase.failure) {
             if (annotations.length < numFailures) {
-              const klass = testcase.classname
-                .replace(/$.*/g, "")
-                .replace(/\./g, "/");
-              const filePathGlob = `${testSrcPath}${klass}.*`;
-              const filePaths = await glob.create(filePathGlob, {
-                followSymbolicLinks: false,
-              });
-              let filePath;
-              for await (const file of filePaths.globGenerator()) {
-                filePath = file;
-              }
-
-              let line = 0;
-              if (filePath !== undefined) {
-                const fullPath = path.resolve(filePath);
-
-                const file = await fs.promises.readFile(filePath, {
-                  encoding: "utf-8",
-                });
-                //TODO: make this better won't deal with methods with arguments etc
-                const lines = file.split("\n");
-                for (let i = 0; i < lines.length; i++) {
-                  if (lines[i].indexOf(testcase.name) >= 0) {
-                    line = i;
-                    break;
-                  }
-                }
-              } else {
-                //fall back so see something
-                filePath = `${testSrcPath}${klass}`;
-              }
+              let {filePath, line} = await findTestLocation(testcase, testSrcPath);
               annotations.push({
                 path: filePath,
                 start_line: line,
@@ -149,3 +119,38 @@ const path = require("path");
     core.setFailed(error.message);
   }
 })();
+
+async function findTestLocation(testcase, testSrcPath) {
+  const klass = testcase.classname
+      .replace(/$.*/g, "")
+      .replace(/\./g, "/");
+  const filePathGlob = `${testSrcPath}${klass}.*`;
+  const filePaths = await glob.create(filePathGlob, {
+    followSymbolicLinks: false,
+  });
+  let filePath;
+  for await (const file of filePaths.globGenerator()) {
+    filePath = file;
+  }
+
+  let line = 0;
+  if (filePath !== undefined) {
+    const fullPath = path.resolve(filePath);
+
+    const file = await fs.promises.readFile(filePath, {
+      encoding: "utf-8",
+    });
+    //TODO: make this better won't deal with methods with arguments etc
+    const lines = file.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].indexOf(testcase.name) >= 0) {
+        line = i;
+        break;
+      }
+    }
+  } else {
+    //fall back so see something
+    filePath = `${testSrcPath}${klass}`;
+  }
+  return {filePath, line};
+}
