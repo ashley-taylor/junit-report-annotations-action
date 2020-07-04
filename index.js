@@ -11,7 +11,6 @@ const path = require("path");
     const includeSummary = core.getInput("includeSummary");
     const numFailures = core.getInput("numFailures");
     const accessToken = core.getInput("access-token");
-    const testSrcPath = core.getInput("testSrcPath");
     const globber = await glob.create(inputPath, {
       followSymbolicLinks: false,
     });
@@ -138,7 +137,10 @@ async function findTestLocation(testReportFile, testcase) {
   const klass = testcase.classname
       .replace(/$.*/g, "")
       .replace(/\./g, "/");
-  const filePathGlob = `**/${klass}.*`;
+
+  // Search in src directories because some files having the same name of the class may have been
+  // generated in the build folder.
+  const filePathGlob = `**/src/**/${klass}.*`;
   const filePaths = await glob.create(filePathGlob, {
     followSymbolicLinks: false,
   });
