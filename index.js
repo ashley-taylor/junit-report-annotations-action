@@ -3,7 +3,6 @@ const github = require("@actions/github");
 const glob = require("@actions/glob");
 const parser = require("xml2js");
 const fs = require("fs");
-const path = require("path");
 
 (async () => {
   try {
@@ -135,8 +134,6 @@ async function findTestLocation(testcase, testSrcPath) {
 
   let line = 0;
   if (filePath !== undefined) {
-    const fullPath = path.resolve(filePath);
-
     const file = await fs.promises.readFile(filePath, {
       encoding: "utf-8",
     });
