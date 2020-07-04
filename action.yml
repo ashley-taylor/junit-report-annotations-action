@@ -1,7 +1,7 @@
 name: 'Junit Report to Annotations'
 description: 'Create an annotation of the test run summaryand also list first n failed tests as seporate annotations'
 branding:
-  icon: 'box'  
+  icon: 'box'
   color: 'green'
 inputs:
   access-token:
@@ -10,7 +10,7 @@ inputs:
   path:
     description: 'glob to junit xml files'
     required: true
-    default: 'target/surefire-reports/*.xml'
+    default: '**/TEST-*.xml'
   includeSummary:
     description: 'include summary annotation'
     required: true
@@ -19,7 +19,7 @@ inputs:
     description: 'max number of failed tests to include'
     require: true
     default: 10
-  testSrcPath: 
+  testSrcPath:
     description: 'path to test source'
     required: true
     default: 'src/test/java/'
