@@ -22,5 +22,8 @@
     "@actions/github": "^2.1.1",
     "@actions/glob": "^0.1.0",
     "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "jest": "26.1.0"
   }
 }
