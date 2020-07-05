@@ -151,3 +151,5 @@ async function findTestLocation(testcase, testSrcPath) {
   }
   return {filePath, line};
 }
+
+module.exports.findTestLocation = findTestLocation;
