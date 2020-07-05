@@ -141,7 +141,7 @@ async function findTestLocation(testcase, testSrcPath) {
     const lines = file.split("\n");
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].indexOf(testcase.name) >= 0) {
-        line = i;
+        line = i + 1; // +1 because the first line is 1 not 0
         break;
       }
     }

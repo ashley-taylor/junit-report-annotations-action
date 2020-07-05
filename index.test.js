@@ -18,7 +18,8 @@ describe('find test location', () => {
                 'src/main/java/org/dummy/ClassTest.java',
                 'package org.dummy;\n' +
                 'class ClassTest {\n' +
-                'void methodTest() { }\n');
+                'void methodTest() { }\n' +
+                '}');
 
             await addFile('src/main/java/org/dummy2/ClassTest.java', '/* empty */');
         });
@@ -29,6 +30,12 @@ describe('find test location', () => {
             let {filePath, line} = await index.findTestLocation(testReportFile, testCase);
 
             expect(filePath).toBe(resolve('src/main/java/org/dummy/ClassTest.java'));
+        });
+
+        it('should find line of the method', async () => {
+            let {filePath, line} = await index.findTestLocation(testReportFile, testCase);
+
+            expect(line).toBe(3);
         });
     });
 });
