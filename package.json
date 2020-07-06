@@ -21,6 +21,6 @@
     "@actions/core": "^1.2.3",
     "@actions/github": "^2.1.1",
     "@actions/glob": "^0.1.0",
-    "xml2json": "^0.12.0"
+    "xml2js": "^0.4.23"
   }
 }

@@ -1,7 +1,7 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const glob = require("@actions/glob");
-const parser = require("xml2json");
+const parser = require("xml2js");
 const fs = require("fs");
 const path = require("path");
 
@@ -26,7 +26,7 @@ const path = require("path");
 
     for await (const file of globber.globGenerator()) {
       const data = await fs.promises.readFile(file);
-      var json = JSON.parse(parser.toJson(data));
+      let json = parser.parseStringPromise(data);
       if (json.testsuite) {
         const testsuite = json.testsuite;
         testDuration += Number(testsuite.time);
