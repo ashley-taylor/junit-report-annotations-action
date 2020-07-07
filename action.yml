@@ -1,24 +1,28 @@
-name: 'Junit Report to Annotations'
-description: 'Create an annotation of the test run summaryand also list first n failed tests as seporate annotations'
+name: "Junit Report to Annotations"
+description: "Create an annotation of the test run summaryand also list first n failed tests as seporate annotations"
 branding:
-  icon: 'box'
-  color: 'green'
+  icon: "box"
+  color: "green"
 inputs:
   access-token:
-    description: 'github token'
+    description: "github token"
     required: true
   path:
-    description: 'glob to junit xml files'
+    description: "glob to junit xml files"
     required: true
-    default: '**/TEST-*.xml'
+    default: "**/TEST-*.xml"
   includeSummary:
-    description: 'include summary annotation'
+    description: "include summary annotation"
     required: true
     default: true
   numFailures:
-    description: 'max number of failed tests to include'
+    description: "max number of failed tests to include"
     require: true
     default: 10
+  name:
+    description: "Name of the Check in the github actions UI"
+    require: true
+    default: "Junit Results"
 runs:
-  using: 'node12'
-  main: 'index.js'
+  using: "node12"
+  main: "index.js"

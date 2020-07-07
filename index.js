@@ -11,6 +11,7 @@ const path = require("path");
     const includeSummary = core.getInput("includeSummary");
     const numFailures = core.getInput("numFailures");
     const accessToken = core.getInput("access-token");
+    const name = core.getInput("name");
     const globber = await glob.create(inputPath, {
       followSymbolicLinks: false,
     });
@@ -83,13 +84,13 @@ const path = require("path");
 
     const createCheckRequest = {
       ...github.context.repo,
-      name: "Junit Results",
+      name,
       head_sha,
       status,
       conclusion,
       output: {
-        title: "Junit Results",
-        summary: "Num passed etc",
+        title: name,
+        summary: `Junit Results ran ${numTests} in ${testDuration} seconds ${numErrored} Errored, ${numFailed} Failed, ${numSkipped} Skipped`,
         annotations,
       },
     };
