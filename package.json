@@ -4,7 +4,7 @@
   "description": "Create an annotation of the build information and also list first n failed tests as seporate annotations",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
     "@actions/github": "^2.1.1",
     "@actions/glob": "^0.1.0",
     "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "jest": "26.1.0"
   }
 }
