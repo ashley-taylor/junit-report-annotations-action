@@ -54,7 +54,7 @@ const path = require("path");
           for (const testcase of testsuite.testcase) {
             await testFunction(testcase);
           }
-        } else {
+        } else if(testsuite.testcase){
           //single test
           await testFunction(testsuite.testcase);
         }
