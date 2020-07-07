@@ -10,8 +10,10 @@ describe("find test location", () => {
     beforeAll(async () => {
       testReportFile = resolve("target/surefire-reports/TEST-dummy.xml");
       testCase = {
-        classname: "org.dummy.ClassTest",
-        name: "methodTest",
+        $: {
+          classname: "org.dummy.ClassTest",
+          name: "methodTest",
+        },
       };
 
       await addFile(
