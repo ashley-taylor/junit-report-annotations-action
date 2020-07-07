@@ -28,7 +28,7 @@ const path = require("path");
       let json = await parser.parseStringPromise(data);
       if (json.testsuite) {
         const testsuite = json.testsuite;
-    console.log(JSON.stringify(testsuite)
+    console.log(JSON.stringify(testsuite))
         testDuration += Number(testsuite.time);
         numTests += Number(testsuite.tests);
         numErrored += Number(testsuite.errors);
