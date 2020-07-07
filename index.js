@@ -5,13 +5,13 @@ const parser = require("xml2js");
 const fs = require("fs");
 const path = require("path");
 
-async function forEach(target, process) {
+async function forEach(target, process, ...args) {
   if (Array.isArray(target)) {
     for (const t of target) {
-      await process(t);
+      await process(t, ...args);
     }
   } else if (target) {
-    await process();
+    await process(target, ...args);
   }
 }
 
@@ -34,7 +34,7 @@ async function forEach(target, process) {
 
     let annotations = [];
 
-    async function processTestSuite(testsuite) {
+    async function processTestSuite(testsuite, file) {
       testDuration += Number(testsuite.$.time);
       numTests += Number(testsuite.$.tests);
       numErrored += Number(testsuite.$.errors);
@@ -63,9 +63,9 @@ async function forEach(target, process) {
       const data = await fs.promises.readFile(file);
       let json = await parser.parseStringPromise(data);
       await forEach(json.testsuites, (testSuites) =>
-        forEach(testSuites.testsuite, processTestSuite)
+        forEach(testSuites.testsuite, processTestSuite, file)
       );
-      await forEach(json.testsuite, processTestSuite);
+      await forEach(json.testsuite, processTestSuite, file);
     }
 
     const annotation_level = numFailed + numErrored > 0 ? "failure" : "notice";
