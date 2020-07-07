@@ -73,47 +73,28 @@ const path = require("path");
     };
 
     annotations = [annotation, ...annotations];
-    if (annotation_level === "failure") {
-      //can just log these
-      for (const annotation of annotations) {
-        console.info(
-          `::warning file=${annotation.path},line=${annotation.start_line}::${annotation.message}`
-        );
-      }
-    } else {
-      const octokit = new github.GitHub(accessToken);
-      const req = {
-        ...github.context.repo,
-        ref: github.context.sha,
-      };
-      const res = await octokit.checks.listForRef(req);
-      const jobName = process.env.GITHUB_JOB;
 
-      const checkRun = res.data.check_runs.find(
-        (check) => check.name === jobName
-      );
-      if (!checkRun) {
-        console.log(
-          "Junit tests result passed but can not identify github check run id."
-        );
-        console.log(
-          "Can happen when performing a pull request from a forked repository."
-        );
-        return;
-      }
-      const check_run_id = checkRun.id;
+    const pullRequest = github.context.payload.pull_request;
+    const link = (pullRequest && pullRequest.html_url) || github.context.ref;
+    const status = "completed";
+    const head_sha =
+      (pullRequest && pullRequest.head.sha) || github.context.sha;
 
-      const update_req = {
-        ...github.context.repo,
-        check_run_id,
-        output: {
-          title: "Junit Results",
-          summary: "Num passed etc",
-          annotations,
-        },
-      };
-      await octokit.checks.update(update_req);
-    }
+    const createCheckRequest = {
+      ...github.context.repo,
+      name,
+      head_sha,
+      status,
+      conclusion,
+      output: {
+        title: "Junit Results",
+        summary: "Num passed etc",
+        annotations,
+      },
+    };
+
+    const octokit = new github.GitHub(githubToken);
+    await octokit.checks.create(createCheckRequest);
   } catch (error) {
     core.setFailed(error.message);
   }
