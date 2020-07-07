@@ -8,7 +8,7 @@ const path = require("path");
 async function forEach(target, process) {
   if (Array.isArray(target)) {
     for (const t of target) {
-      await process(testcase);
+      await process(t);
     }
   } else if (target) {
     await process();
