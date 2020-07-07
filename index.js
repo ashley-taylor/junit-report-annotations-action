@@ -36,7 +36,7 @@ const path = require("path");
         testFunction = async (testcase) => {
           if (testcase.failure) {
             if (annotations.length < numFailures) {
-              let {filePath, line} = await findTestLocation(file, testcase);
+              let { filePath, line } = await findTestLocation(file, testcase);
               annotations.push({
                 path: filePath,
                 start_line: line,
@@ -54,7 +54,7 @@ const path = require("path");
           for (const testcase of testsuite.testcase) {
             await testFunction(testcase);
           }
-        } else if(testsuite.testcase){
+        } else if (testsuite.testcase) {
           //single test
           await testFunction(testsuite.testcase);
         }
@@ -94,7 +94,7 @@ const path = require("path");
       );
       if (!checkRun) {
         console.log(
-          "Junit tests result passed but can not identify test suite."
+          "Junit tests result passed but can not identify github check run id."
         );
         console.log(
           "Can happen when performing a pull request from a forked repository."
@@ -134,9 +134,7 @@ const path = require("path");
  * @returns {Promise<{line: number, filePath: string}>} the line and the file of the failing test method.
  */
 async function findTestLocation(testReportFile, testcase) {
-  const klass = testcase.$.classname
-      .replace(/$.*/g, "")
-      .replace(/\./g, "/");
+  const klass = testcase.$.classname.replace(/$.*/g, "").replace(/\./g, "/");
 
   // Search in src directories because some files having the same name of the class may have been
   // generated in the build folder.
@@ -147,7 +145,8 @@ async function findTestLocation(testReportFile, testcase) {
   let bestFilePath;
   let bestRelativePathLength = -1;
   for await (const candidateFile of filePaths.globGenerator()) {
-    let candidateRelativeLength = path.relative(testReportFile, candidateFile).length;
+    let candidateRelativeLength = path.relative(testReportFile, candidateFile)
+      .length;
 
     if (!bestFilePath || candidateRelativeLength < bestRelativePathLength) {
       bestFilePath = candidateFile;
@@ -172,7 +171,7 @@ async function findTestLocation(testReportFile, testcase) {
     //fall back so see something
     bestFilePath = `${klass}`;
   }
-  return {filePath: bestFilePath, line};
+  return { filePath: bestFilePath, line };
 }
 
 module.exports.findTestLocation = findTestLocation;
