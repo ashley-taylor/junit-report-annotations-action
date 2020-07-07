@@ -83,7 +83,7 @@ const path = require("path");
 
     const createCheckRequest = {
       ...github.context.repo,
-      name,
+      name: "Junit Results",
       head_sha,
       status,
       conclusion,
