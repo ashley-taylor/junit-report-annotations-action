@@ -72,6 +72,7 @@ const path = require("path");
       message: `Junit Results ran ${numTests} in ${testDuration} seconds ${numErrored} Errored, ${numFailed} Failed, ${numSkipped} Skipped`,
     };
 
+    const conclusion = annotations.length === 0 ? "success" : "failure";
     annotations = [annotation, ...annotations];
 
     const pullRequest = github.context.payload.pull_request;
