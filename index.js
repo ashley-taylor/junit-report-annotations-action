@@ -28,12 +28,11 @@ const path = require("path");
       let json = await parser.parseStringPromise(data);
       if (json.testsuite) {
         const testsuite = json.testsuite;
-    console.log(JSON.stringify(testsuite))
-        testDuration += Number(testsuite.time);
-        numTests += Number(testsuite.tests);
-        numErrored += Number(testsuite.errors);
-        numFailed += Number(testsuite.failures);
-        numSkipped += Number(testsuite.skipped);
+        testDuration += Number(testsuite.$.time);
+        numTests += Number(testsuite.$.tests);
+        numErrored += Number(testsuite.$.errors);
+        numFailed += Number(testsuite.$.failures);
+        numSkipped += Number(testsuite.$.skipped);
         testFunction = async (testcase) => {
           if (testcase.failure) {
             if (annotations.length < numFailures) {
@@ -135,7 +134,7 @@ const path = require("path");
  * @returns {Promise<{line: number, filePath: string}>} the line and the file of the failing test method.
  */
 async function findTestLocation(testReportFile, testcase) {
-  const klass = testcase.classname
+  const klass = testcase.$.classname
       .replace(/$.*/g, "")
       .replace(/\./g, "/");
 
