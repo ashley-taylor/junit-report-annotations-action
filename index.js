@@ -11,7 +11,7 @@ async function forEach(target, process) {
       await process(t);
     }
   } else if (target) {
-    await process();
+    await process(target);
   }
 }
 
