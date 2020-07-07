@@ -5,6 +5,16 @@ const parser = require("xml2js");
 const fs = require("fs");
 const path = require("path");
 
+async function forEach(target, process) {
+  if (Array.isArray(target)) {
+    for (const t of target) {
+      await process(testcase);
+    }
+  } else if (target) {
+    await process();
+  }
+}
+
 (async () => {
   try {
     const inputPath = core.getInput("path");
@@ -24,42 +34,38 @@ const path = require("path");
 
     let annotations = [];
 
+    async function processTestSuite(testsuite) {
+      testDuration += Number(testsuite.$.time);
+      numTests += Number(testsuite.$.tests);
+      numErrored += Number(testsuite.$.errors);
+      numFailed += Number(testsuite.$.failures);
+      numSkipped += Number(testsuite.$.skipped);
+      testFunction = async (testcase) => {
+        if (testcase.failure) {
+          if (annotations.length < numFailures) {
+            let { filePath, line } = await findTestLocation(file, testcase);
+            annotations.push({
+              path: filePath,
+              start_line: line,
+              end_line: line,
+              start_column: 0,
+              end_column: 0,
+              annotation_level: "failure",
+              message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
+            });
+          }
+        }
+      };
+      await forEach(testsuite.testcase, testFunction);
+    }
+
     for await (const file of globber.globGenerator()) {
       const data = await fs.promises.readFile(file);
       let json = await parser.parseStringPromise(data);
-      if (json.testsuite) {
-        const testsuite = json.testsuite;
-        testDuration += Number(testsuite.$.time);
-        numTests += Number(testsuite.$.tests);
-        numErrored += Number(testsuite.$.errors);
-        numFailed += Number(testsuite.$.failures);
-        numSkipped += Number(testsuite.$.skipped);
-        testFunction = async (testcase) => {
-          if (testcase.failure) {
-            if (annotations.length < numFailures) {
-              let { filePath, line } = await findTestLocation(file, testcase);
-              annotations.push({
-                path: filePath,
-                start_line: line,
-                end_line: line,
-                start_column: 0,
-                end_column: 0,
-                annotation_level: "failure",
-                message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
-              });
-            }
-          }
-        };
-
-        if (Array.isArray(testsuite.testcase)) {
-          for (const testcase of testsuite.testcase) {
-            await testFunction(testcase);
-          }
-        } else if (testsuite.testcase) {
-          //single test
-          await testFunction(testsuite.testcase);
-        }
-      }
+      await forEach(json.testsuites, (testSuites) =>
+        forEach(testSuites.testsuite, processTestSuite)
+      );
+      await forEach(json.testsuite, processTestSuite);
     }
 
     const annotation_level = numFailed + numErrored > 0 ? "failure" : "notice";
