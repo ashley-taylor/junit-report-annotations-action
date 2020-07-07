@@ -94,7 +94,7 @@ const path = require("path");
       },
     };
 
-    const octokit = new github.GitHub(githubToken);
+    const octokit = new github.GitHub(accessToken);
     await octokit.checks.create(createCheckRequest);
   } catch (error) {
     core.setFailed(error.message);
