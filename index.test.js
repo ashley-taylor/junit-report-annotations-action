@@ -83,6 +83,130 @@ describe("find test location", () => {
   });
 });
 
+describe('readTestSuites', () => {
+  describe('given testsuite tag', () => {
+    afterAll(clearFiles);
+
+    it('should return single test suite', async () => {
+      const filePath = 'TEST-report.xml';
+
+      await addFile(filePath, '<?xml version="1.0" encoding="UTF-8"?>\n' +
+          '<testsuite name="org.dummy.DummyTest" tests="4" skipped="1" failures="1" errors="1"' +
+          ' timestamp="2020-07-21T19:20:12" hostname="dummy" time="0.132">\n' +
+          '  <testcase name="test1" classname="org.dummy.DummyTest" time="0.028"/>\n' +
+          '  <testcase name="test2" classname="org.dummy.DummyTest" time="0.054">\n' +
+          '    <failure message="failure_message" type="failure_type">failure_text</failure>\n' +
+          '  </testcase>\n' +
+          '</testsuite>');
+
+      const testSuites = await index.readTestSuites(resolve(filePath));
+
+      expect(testSuites).toStrictEqual([{
+        $: {
+          name: 'org.dummy.DummyTest',
+          tests: '4',
+          skipped: '1',
+          failures: '1',
+          errors: '1',
+          timestamp: '2020-07-21T19:20:12',
+          hostname: 'dummy',
+          time: '0.132'
+        },
+        testcase: [
+          {
+            $: {
+              name: 'test1',
+              classname: 'org.dummy.DummyTest',
+              time: '0.028'
+            }
+          },
+          {
+            $: {
+              name: 'test2',
+              classname: 'org.dummy.DummyTest',
+              time: '0.054'
+            },
+            failure: [{
+              $: {
+                message: 'failure_message',
+                type: 'failure_type'
+              },
+              _: 'failure_text'
+            }]
+          }
+        ]
+      }]);
+    });
+  });
+
+  describe('given testsuites tag', () => {
+    afterAll(clearFiles);
+
+    it('should return multiple test suites', async () => {
+      const filePath = 'TEST-report.xml';
+
+      await addFile(filePath, '<?xml version="1.0" encoding="UTF-8"?>\n' +
+          '<testsuites>\n' +
+          '  <testsuite name="org.dummy.DummyTest" tests="4" skipped="1" failures="1" errors="1"' +
+          '   timestamp="2020-07-21T19:20:12" hostname="dummy" time="0.132">\n' +
+          '    <testcase name="test1" classname="org.dummy.DummyTest" time="0.028"/>\n' +
+          '    <testcase name="test2" classname="org.dummy.DummyTest" time="0.054">\n' +
+          '      <failure message="failure_message" type="failure_type">' +
+          '<![CDATA[failure_text]]></failure>\n' +
+          '    </testcase>\n' +
+          '  </testsuite>\n' +
+          '  <testsuite name="org.dummy.DummyTest2">\n' +
+          '  </testsuite>\n' +
+          '</testsuites>');
+
+      const testSuites = await index.readTestSuites(resolve(filePath));
+
+      expect(testSuites).toStrictEqual([
+        {
+          $: {
+            name: 'org.dummy.DummyTest',
+            tests: '4',
+            skipped: '1',
+            failures: '1',
+            errors: '1',
+            timestamp: '2020-07-21T19:20:12',
+            hostname: 'dummy',
+            time: '0.132'
+          },
+          testcase: [
+            {
+              $: {
+                name: 'test1',
+                classname: 'org.dummy.DummyTest',
+                time: '0.028'
+              }
+            },
+            {
+              $: {
+                name: 'test2',
+                classname: 'org.dummy.DummyTest',
+                time: '0.054'
+              },
+              failure: [{
+                $: {
+                  message: 'failure_message',
+                  type: 'failure_type'
+                },
+                _: 'failure_text'
+              }]
+            }
+          ]
+        },
+        {
+          $: {
+            name: 'org.dummy.DummyTest2'
+          }
+        }
+      ]);
+    });
+  });
+});
+
 async function addFile(filePath, content) {
   filePath = "tmp/" + filePath;
   let dirname = path.dirname(filePath);

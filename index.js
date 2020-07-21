@@ -28,17 +28,11 @@ async function forEach(target, process, ...args) {
 
     let testSummary = new TestSummary();
 
-    async function processTestSuite(testsuite, file) {
-      await testSummary.handleTestSuite(testsuite, file, numFailures);
-    }
-
     for await (const file of globber.globGenerator()) {
-      const data = await fs.promises.readFile(file);
-      let json = await parser.parseStringPromise(data);
-      await forEach(json.testsuites, (testSuites) =>
-        forEach(testSuites.testsuite, processTestSuite, file)
-      );
-      await forEach(json.testsuite, processTestSuite, file);
+      const testsuites = await readTestSuites(file);
+      for await (const testsuite of testsuites) {
+        await testSummary.handleTestSuite(testsuite, file, numFailures);
+      }
     }
 
     const annotation_level = testSummary.isFailedOrErrored() ? "failure" : "notice";
@@ -114,6 +108,7 @@ class TestSummary {
         }
       }
     };
+
     await forEach(testsuite.testcase, testFunction);
   }
 
@@ -127,37 +122,55 @@ class TestSummary {
 
 }
 
-async function readJUnitReport(data, file, testSummary) {
-  async function processTestSuite(testsuite, file) {
-    testDuration += Number(testsuite.$.time);
-    numTests += Number(testsuite.$.tests);
-    numErrored += Number(testsuite.$.errors);
-    numFailed += Number(testsuite.$.failures);
-    numSkipped += Number(testsuite.$.skipped);
-    testFunction = async (testcase) => {
-      if (testcase.failure) {
-        if (annotations.length < numFailures) {
-          let { filePath, line } = await findTestLocation(file, testcase);
-          annotations.push({
-            path: filePath,
-            start_line: line,
-            end_line: line,
-            start_column: 0,
-            end_column: 0,
-            annotation_level: "failure",
-            message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
-          });
-        }
-      }
-    };
-    await forEach(testsuite.testcase, testFunction);
-  }
+/**
+ * Read JUnit XML report and return the list of all test suites in JSON format.
+ *
+ * XML children are mapped to JSON array of objects (ie b in <a><b></b></a> is mapped to
+ * a.b[0]). XML attributes are mapped to a `$` JSON element (ie <a attr="value" /> is mapped to
+ * a.$.attr). Tag content are mapped to a `_` JSON element (ie <a>content</a> is mapped to a._).
+ *
+ * The `testsuite` are directly the first accessible object in the returned array. Hence, the
+ * expected schema is:
+ *
+ * ```
+ * [
+ *   {
+ *     // A testsuite
+ *     $: {
+ *       name: 'value',
+ *       // tests, skipped, failures, error, time, ...
+ *     },
+ *     testcase: [
+ *       {
+ *         // A testcase
+ *         $: {
+ *             name: 'value',
+ *             // classname, time, ...
+ *         },
+ *         failure: [{
+ *           $: {
+ *             message: 'value',
+ *             // type, ...
+ *           },
+ *           _: 'failure body'
+ *         }]
+ *       }
+ *     ]
+ *   }
+ * ]
+ * ```
+ *
+ * @param file filename of the XML to read from
+ * @returns {Promise<[JSON]>} list of test suites in JSON
+ */
+async function readTestSuites(file) {
+  const data = await fs.promises.readFile(file);
+  const json = await parser.parseStringPromise(data);
 
-  let json = await parser.parseStringPromise(data);
-  await forEach(json.testsuites, (testSuites) =>
-      forEach(testSuites.testsuite, processTestSuite, file)
-  );
-  await forEach(json.testsuite, processTestSuite, file);
+  if (json.testsuites) {
+    return json.testsuites.testsuite
+  }
+  return [json.testsuite];
 }
 
 /**
@@ -215,3 +228,4 @@ async function findTestLocation(testReportFile, testcase) {
 }
 
 module.exports.findTestLocation = findTestLocation;
+module.exports.readTestSuites = readTestSuites;
