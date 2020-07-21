@@ -26,37 +26,10 @@ async function forEach(target, process, ...args) {
       followSymbolicLinks: false,
     });
 
-    let numTests = 0;
-    let numSkipped = 0;
-    let numFailed = 0;
-    let numErrored = 0;
-    let testDuration = 0;
-
-    let annotations = [];
+    let testSummary = new TestSummary();
 
     async function processTestSuite(testsuite, file) {
-      testDuration += Number(testsuite.$.time);
-      numTests += Number(testsuite.$.tests);
-      numErrored += Number(testsuite.$.errors);
-      numFailed += Number(testsuite.$.failures);
-      numSkipped += Number(testsuite.$.skipped);
-      testFunction = async (testcase) => {
-        if (testcase.failure) {
-          if (annotations.length < numFailures) {
-            let { filePath, line } = await findTestLocation(file, testcase);
-            annotations.push({
-              path: filePath,
-              start_line: line,
-              end_line: line,
-              start_column: 0,
-              end_column: 0,
-              annotation_level: "failure",
-              message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
-            });
-          }
-        }
-      };
-      await forEach(testsuite.testcase, testFunction);
+      await testSummary.handleTestSuite(testsuite, file, numFailures);
     }
 
     for await (const file of globber.globGenerator()) {
@@ -68,7 +41,7 @@ async function forEach(target, process, ...args) {
       await forEach(json.testsuite, processTestSuite, file);
     }
 
-    const annotation_level = numFailed + numErrored > 0 ? "failure" : "notice";
+    const annotation_level = testSummary.isFailedOrErrored() ? "failure" : "notice";
     const annotation = {
       path: "test",
       start_line: 0,
@@ -76,17 +49,18 @@ async function forEach(target, process, ...args) {
       start_column: 0,
       end_column: 0,
       annotation_level,
-      message: `Junit Results ran ${numTests} in ${testDuration} seconds ${numErrored} Errored, ${numFailed} Failed, ${numSkipped} Skipped`,
+      message: testSummary.toFormattedMessage(),
     };
 
-    const conclusion = annotations.length === 0 ? "success" : "failure";
-    annotations = [annotation, ...annotations];
+    const conclusion = testSummary.annotations.length === 0 ? "success" : "failure";
+    testSummary.annotations = [annotation, ...testSummary.annotations];
 
     const pullRequest = github.context.payload.pull_request;
     const link = (pullRequest && pullRequest.html_url) || github.context.ref;
     const status = "completed";
     const head_sha =
       (pullRequest && pullRequest.head.sha) || github.context.sha;
+    const annotations = testSummary.annotations;
 
     const createCheckRequest = {
       ...github.context.repo,
@@ -96,7 +70,7 @@ async function forEach(target, process, ...args) {
       conclusion,
       output: {
         title: name,
-        summary: `Junit Results ran ${numTests} in ${testDuration} seconds ${numErrored} Errored, ${numFailed} Failed, ${numSkipped} Skipped`,
+        summary: testSummary.toFormattedMessage(),
         annotations,
       },
     };
@@ -107,6 +81,84 @@ async function forEach(target, process, ...args) {
     core.setFailed(error.message);
   }
 })();
+
+class TestSummary {
+
+  numTests = 0;
+  numSkipped = 0;
+  numFailed = 0;
+  numErrored = 0;
+  testDuration = 0;
+  annotations = [];
+
+  async handleTestSuite(testsuite, file, maxNumFailures) {
+    this.testDuration += Number(testsuite.$.time);
+    this.numTests += Number(testsuite.$.tests);
+    this.numErrored += Number(testsuite.$.errors);
+    this.numFailed += Number(testsuite.$.failures);
+    this.numSkipped += Number(testsuite.$.skipped);
+
+    let testFunction = async (testcase) => {
+      if (testcase.failure) {
+        if (this.annotations.length < maxNumFailures) {
+          let { filePath, line } = await findTestLocation(file, testcase);
+          this.annotations.push({
+            path: filePath,
+            start_line: line,
+            end_line: line,
+            start_column: 0,
+            end_column: 0,
+            annotation_level: "failure",
+            message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
+          });
+        }
+      }
+    };
+    await forEach(testsuite.testcase, testFunction);
+  }
+
+  isFailedOrErrored() {
+    return this.numFailed > 0 || this.numErrored > 0;
+  }
+
+  toFormattedMessage() {
+    return `Junit Results ran ${this.numTests} in ${this.testDuration} seconds ${this.numErrored} Errored, ${this.numFailed} Failed, ${this.numSkipped} Skipped`;
+  }
+
+}
+
+async function readJUnitReport(data, file, testSummary) {
+  async function processTestSuite(testsuite, file) {
+    testDuration += Number(testsuite.$.time);
+    numTests += Number(testsuite.$.tests);
+    numErrored += Number(testsuite.$.errors);
+    numFailed += Number(testsuite.$.failures);
+    numSkipped += Number(testsuite.$.skipped);
+    testFunction = async (testcase) => {
+      if (testcase.failure) {
+        if (annotations.length < numFailures) {
+          let { filePath, line } = await findTestLocation(file, testcase);
+          annotations.push({
+            path: filePath,
+            start_line: line,
+            end_line: line,
+            start_column: 0,
+            end_column: 0,
+            annotation_level: "failure",
+            message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
+          });
+        }
+      }
+    };
+    await forEach(testsuite.testcase, testFunction);
+  }
+
+  let json = await parser.parseStringPromise(data);
+  await forEach(json.testsuites, (testSuites) =>
+      forEach(testSuites.testsuite, processTestSuite, file)
+  );
+  await forEach(json.testsuite, processTestSuite, file);
+}
 
 /**
  * Find the file and the line of the test method that is specified in the given test case.
