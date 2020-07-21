@@ -5,16 +5,6 @@ const parser = require("xml2js");
 const fs = require("fs");
 const path = require("path");
 
-async function forEach(target, process, ...args) {
-  if (Array.isArray(target)) {
-    for (const t of target) {
-      await process(t, ...args);
-    }
-  } else if (target) {
-    await process(target, ...args);
-  }
-}
-
 (async () => {
   try {
     const inputPath = core.getInput("path");
@@ -27,11 +17,12 @@ async function forEach(target, process, ...args) {
     });
 
     let testSummary = new TestSummary();
+    testSummary.maxNumFailures = numFailures;
 
     for await (const file of globber.globGenerator()) {
       const testsuites = await readTestSuites(file);
       for await (const testsuite of testsuites) {
-        await testSummary.handleTestSuite(testsuite, file, numFailures);
+        await testSummary.handleTestSuite(testsuite, file);
       }
     }
 
@@ -78,6 +69,8 @@ async function forEach(target, process, ...args) {
 
 class TestSummary {
 
+  maxNumFailures = -1;
+
   numTests = 0;
   numSkipped = 0;
   numFailed = 0;
@@ -85,31 +78,40 @@ class TestSummary {
   testDuration = 0;
   annotations = [];
 
-  async handleTestSuite(testsuite, file, maxNumFailures) {
+  async handleTestSuite(testsuite, file) {
     this.testDuration += Number(testsuite.$.time);
     this.numTests += Number(testsuite.$.tests);
     this.numErrored += Number(testsuite.$.errors);
     this.numFailed += Number(testsuite.$.failures);
     this.numSkipped += Number(testsuite.$.skipped);
 
-    let testFunction = async (testcase) => {
-      if (testcase.failure) {
-        if (this.annotations.length < maxNumFailures) {
-          let { filePath, line } = await findTestLocation(file, testcase);
-          this.annotations.push({
-            path: filePath,
-            start_line: line,
-            end_line: line,
-            start_column: 0,
-            end_column: 0,
-            annotation_level: "failure",
-            message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
-          });
-        }
+    if (testsuite.testcase) {
+      for await (const testcase of testsuite.testcase) {
+        await this.handleTestCase(testcase, file);
       }
-    };
+    }
+  }
 
-    await forEach(testsuite.testcase, testFunction);
+  async handleTestCase(testcase, file) {
+    if (!testcase.failure) {
+      return;
+    }
+
+    if (this.annotations.length >= this.maxNumFailures) {
+      return;
+    }
+
+    let {filePath, line} = await findTestLocation(file, testcase);
+
+    this.annotations.push({
+      path: filePath,
+      start_line: line,
+      end_line: line,
+      start_column: 0,
+      end_column: 0,
+      annotation_level: "failure",
+      message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
+    });
   }
 
   isFailedOrErrored() {
