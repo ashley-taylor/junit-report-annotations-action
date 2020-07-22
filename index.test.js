@@ -275,7 +275,8 @@ describe('TestSummary', () => {
         failure: [{
           $: {
             message: 'dummyMessage'
-          }
+          },
+          _: 'detailed description of failure'
         }]
       };
 
@@ -293,11 +294,13 @@ describe('TestSummary', () => {
         start_column: 0,
         end_column: 0,
         annotation_level: 'failure',
+        title: 'dummyTest',
         message: 'Junit test dummyTest failed dummyMessage',
+        raw_details: 'detailed description of failure'
       }]);
     });
 
-    it('should handle no message in failure', async () => {
+    it('should handle no message and no content in failure', async () => {
       const testcase = {
         $: {
           name: 'dummyTest'
@@ -319,7 +322,9 @@ describe('TestSummary', () => {
         start_column: 0,
         end_column: 0,
         annotation_level: 'failure',
+        title: 'dummyTest',
         message: 'Junit test dummyTest failed',
+        raw_details: 'No details'
       }]);
     });
   });

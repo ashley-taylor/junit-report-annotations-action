@@ -112,7 +112,9 @@ class TestSummary {
       start_column: 0,
       end_column: 0,
       annotation_level: "failure",
+      title: testcase.$.name,
       message: TestSummary.formatFailureMessage(testcase),
+      raw_details: testcase.failure[0]._ || 'No details'
     });
   }
 
