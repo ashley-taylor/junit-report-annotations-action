@@ -1,6 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.dummy.ActionTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-07-04T07:45:48" hostname="localhost" time="0.001">
-    <properties/>
-    <system-out><![CDATA[]]></system-out>
-    <system-err><![CDATA[]]></system-err>
-</testsuite>
+<testsuites>
+    <testsuite name="org.dummy.DummyTest" tests="3" failures="1" errors="1"
+               timestamp="2020-07-21T19:20:12" hostname="dummy" time="0.132">
+        <testcase name="test1" classname="org.dummy.DummyTest" time="0.028"/>
+        <testcase
+                name="test2_givenAPrecondition_ThenItShouldDoSomething" classname="org.dummy.DummyTest" time="0.054">
+            <failure
+                    message="java.lang.AssertionError: &#10;Expected not same:&lt;Mock for Object, hashCode: 1210565765&gt;" type="java.lang.AssertionError">java.lang.AssertionError:
+                Expected not same:&lt;Mock for Object, hashCode: 1210565765&gt;
+                at org.dummy.DummyTest.test2_givenAPrecondition_ThenItShouldDoSomething(DummyTest.kt:61)
+                at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+                at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+                at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+                at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+                at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
+                at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+                at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
+                at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+                at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+                at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
+                at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
+                at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
+                at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
+                at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+                at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+                at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+                at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+                at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+                at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+                at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+                at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+                at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+                at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+                at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+                at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+                at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+                at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+                at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+                at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+                at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+                at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+                at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+                at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+                at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+                at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:119)
+                at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+                at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+                at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+                at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+                at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+                at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+                at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+                at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+                at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+                at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+                at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+                at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+                at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+                at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+                at java.base/java.lang.Thread.run(Thread.java:834)
+            </failure>
+        </testcase>
+        <testcase classname="test.yml"
+                  name="doing an action given a precondition should result in something" time="0">¤
+            <failure type="failure"><![CDATA[
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean bibendum, ligula et congue
+ vulputate, sem leo tempor turpis, auctor aliquam dolor neque blandit arcu. Aenean scelerisque, orci
+ id vehicula interdum, purus risus bibendum nulla, ac pellentesque felis mauris at orci. Aenean nec
+ est at urna blandit bibendum sit amet sed libero. Vestibulum vestibulum, dui a tristique imperdiet,
+ odio elit tincidunt mi, id molestie risus eros quis neque. Duis hendrerit turpis a orci tempor
+ aliquam. Maecenas dignissim odio in sem sagittis tempus. Morbi ac molestie ante. Pellentesque
+ condimentum pellentesque egestas.
+ ]]></failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="org.dummy.DummyTest2">
+    </testsuite>
+</testsuites>
