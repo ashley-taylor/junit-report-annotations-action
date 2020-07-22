@@ -207,6 +207,44 @@ describe('readTestSuites', () => {
   });
 });
 
+describe('TestSummary', () => {
+  describe('handleTestSuite', () => {
+    it('should be initialized with empty summary', () => {
+      const testSummary = new index.TestSummary();
+
+      expect(testSummary.testDuration).toBe(0);
+      expect(testSummary.numTests).toBe(0);
+      expect(testSummary.numErrored).toBe(0);
+      expect(testSummary.numFailed).toBe(0);
+      expect(testSummary.numSkipped).toBe(0);
+      expect(testSummary.annotations).toStrictEqual([]);
+    });
+
+    it('should ignore missing values', async () => {
+      const testSummary = new index.TestSummary();
+
+      await testSummary.handleTestSuite({
+        $: {
+          time: "1",
+          tests: "2",
+          errors: "3",
+          failures: "4",
+          skipped: "5"
+        }
+      }, 'file');
+
+      await testSummary.handleTestSuite({$:{}}, 'file');
+      await testSummary.handleTestSuite({}, 'file');
+
+      expect(testSummary.testDuration).toBe(1);
+      expect(testSummary.numTests).toBe(2);
+      expect(testSummary.numErrored).toBe(3);
+      expect(testSummary.numFailed).toBe(4);
+      expect(testSummary.numSkipped).toBe(5);
+    });
+  });
+});
+
 async function addFile(filePath, content) {
   filePath = "tmp/" + filePath;
   let dirname = path.dirname(filePath);

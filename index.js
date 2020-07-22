@@ -79,11 +79,13 @@ class TestSummary {
   annotations = [];
 
   async handleTestSuite(testsuite, file) {
-    this.testDuration += Number(testsuite.$.time);
-    this.numTests += Number(testsuite.$.tests);
-    this.numErrored += Number(testsuite.$.errors);
-    this.numFailed += Number(testsuite.$.failures);
-    this.numSkipped += Number(testsuite.$.skipped);
+    if (testsuite.$) {
+      this.testDuration += Number(testsuite.$.time) || 0;
+      this.numTests += Number(testsuite.$.tests) || 0;
+      this.numErrored += Number(testsuite.$.errors) || 0;
+      this.numFailed += Number(testsuite.$.failures) || 0;
+      this.numSkipped += Number(testsuite.$.skipped) || 0;
+    }
 
     if (testsuite.testcase) {
       for await (const testcase of testsuite.testcase) {
@@ -231,3 +233,4 @@ async function findTestLocation(testReportFile, testcase) {
 
 module.exports.findTestLocation = findTestLocation;
 module.exports.readTestSuites = readTestSuites;
+module.exports.TestSummary = TestSummary;
