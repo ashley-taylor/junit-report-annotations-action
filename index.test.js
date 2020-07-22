@@ -208,10 +208,14 @@ describe('readTestSuites', () => {
 });
 
 describe('TestSummary', () => {
+  let testSummary;
+
+  beforeEach(() => {
+    testSummary = new index.TestSummary();
+  });
+
   describe('handleTestSuite', () => {
     it('should be initialized with empty summary', () => {
-      const testSummary = new index.TestSummary();
-
       expect(testSummary.testDuration).toBe(0);
       expect(testSummary.numTests).toBe(0);
       expect(testSummary.numErrored).toBe(0);
@@ -221,8 +225,6 @@ describe('TestSummary', () => {
     });
 
     it('should ignore missing values', async () => {
-      const testSummary = new index.TestSummary();
-
       await testSummary.handleTestSuite({
         $: {
           time: "1",
@@ -241,6 +243,84 @@ describe('TestSummary', () => {
       expect(testSummary.numErrored).toBe(3);
       expect(testSummary.numFailed).toBe(4);
       expect(testSummary.numSkipped).toBe(5);
+    });
+
+    it('should call handle test cases for all', async () => {
+      spyOn(testSummary, 'handleTestCase');
+
+      const testcase1 = { t1: '' };
+      const testcase2 = { t2: '' };
+
+      await testSummary.handleTestSuite({
+        testcase: [testcase1, testcase2]
+      }, 'file');
+
+      expect(testSummary.handleTestCase).toHaveBeenCalledWith(testcase1, 'file');
+      expect(testSummary.handleTestCase).toHaveBeenCalledWith(testcase2, 'file');
+    });
+  });
+
+  describe('handleTestCase', () => {
+    it('should do nothing if there is no failure', async () => {
+      await testSummary.handleTestCase({}, 'file');
+
+      expect(testSummary.annotations).toStrictEqual([]);
+    });
+
+    it('should add an annotation if there is failure', async () => {
+      const testcase = {
+        $: {
+          name: 'dummyTest'
+        },
+        failure: [{
+          $: {
+            message: 'dummyMessage'
+          }
+        }]
+      };
+
+      spyOn(index, 'findTestLocation').and.returnValue({
+        filePath: '/path/of/file',
+        line: 42
+      });
+
+      await testSummary.handleTestCase(testcase, 'file');
+
+      expect(testSummary.annotations).toStrictEqual([{
+        path: '/path/of/file',
+        start_line: 42,
+        end_line: 42,
+        start_column: 0,
+        end_column: 0,
+        annotation_level: 'failure',
+        message: 'Junit test dummyTest failed dummyMessage',
+      }]);
+    });
+
+    it('should handle no message in failure', async () => {
+      const testcase = {
+        $: {
+          name: 'dummyTest'
+        },
+        failure: [{}]
+      };
+
+      spyOn(index, 'findTestLocation').and.returnValue({
+        filePath: '/path/of/file',
+        line: 42
+      });
+
+      await testSummary.handleTestCase(testcase, 'file');
+
+      expect(testSummary.annotations).toStrictEqual([{
+        path: '/path/of/file',
+        start_line: 42,
+        end_line: 42,
+        start_column: 0,
+        end_column: 0,
+        annotation_level: 'failure',
+        message: 'Junit test dummyTest failed',
+      }]);
     });
   });
 });

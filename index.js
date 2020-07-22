@@ -99,11 +99,11 @@ class TestSummary {
       return;
     }
 
-    if (this.annotations.length >= this.maxNumFailures) {
+    if (this.maxNumFailures !== -1 && this.annotations.length >= this.maxNumFailures) {
       return;
     }
 
-    let {filePath, line} = await findTestLocation(file, testcase);
+    const {filePath, line} = await module.exports.findTestLocation(file, testcase);
 
     this.annotations.push({
       path: filePath,
@@ -112,8 +112,17 @@ class TestSummary {
       start_column: 0,
       end_column: 0,
       annotation_level: "failure",
-      message: `Junit test ${testcase.name} failed ${testcase.failure.message}`,
+      message: TestSummary.formatFailureMessage(testcase),
     });
+  }
+
+  static formatFailureMessage(testcase) {
+    const failure = testcase.failure[0];
+    if (failure.$ && failure.$.message) {
+      return `Junit test ${testcase.$.name} failed ${failure.$.message}`;
+    } else {
+      return `Junit test ${testcase.$.name} failed`;
+    }
   }
 
   isFailedOrErrored() {
