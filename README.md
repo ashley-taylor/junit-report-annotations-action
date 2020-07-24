@@ -19,3 +19,5 @@ On a succesful run will get a summary like
 On a failed run will get a image like this
 
 ![Fail](/../images/fail.png?raw=true "Fail")
+
+DO NOT MERGE
