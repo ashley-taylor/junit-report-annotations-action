@@ -23,6 +23,9 @@ inputs:
     description: "Name of the Check in the github actions UI"
     require: true
     default: "Junit Results"
+outputs:
+  summary:
+    description: "The test run summary"
 runs:
   using: "node12"
   main: "index.js"
