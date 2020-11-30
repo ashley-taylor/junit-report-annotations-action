@@ -21,8 +21,14 @@ jobs:
 
       - uses: ./
         with:
-          name: "unbuntu failed tests"
+          name: "ubuntu failed tests"
           access-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: ./
+        with:
+          name: "ubuntu valid tests"
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          path: "**/TEST-*-Success.xml"
 
   macos-action-tests:
     runs-on: macos-latest
