@@ -1,5 +1,5 @@
 name: "Junit Report to Annotations"
-description: "Create an annotation of the test run summaryand also list first n failed tests as seporate annotations"
+description: "Add check runs to your CI with annotations listing the test failures"
 branding:
   icon: "box"
   color: "green"
