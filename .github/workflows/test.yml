@@ -18,18 +18,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+
       - uses: ./
         with:
-          name: "unbuntu unit tests"
+          name: "unbuntu failed tests"
           access-token: ${{ secrets.GITHUB_TOKEN }}
-          path: "**/TEST-*.xml"
 
   macos-action-tests:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v1
+
       - uses: ./
         with:
-          name: "macos unit tests"
+          name: "macos failed tests"
           access-token: ${{ secrets.GITHUB_TOKEN }}
-          path: "**/TEST-*.xml"
