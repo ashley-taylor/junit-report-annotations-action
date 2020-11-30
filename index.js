@@ -26,19 +26,6 @@ const path = require("path");
       }
     }
 
-    const annotation_level = testSummary.isFailedOrErrored() ? "failure" : "notice";
-    const annotation = {
-      path: "test",
-      start_line: 0,
-      end_line: 0,
-      start_column: 0,
-      end_column: 0,
-      annotation_level,
-      message: testSummary.toFormattedMessage(),
-    };
-
-    testSummary.annotations = [annotation, ...testSummary.annotations];
-
     const pullRequest = github.context.payload.pull_request;
     const head_sha = (pullRequest && pullRequest.head.sha) || github.context.sha;
     const annotations = testSummary.annotations;
