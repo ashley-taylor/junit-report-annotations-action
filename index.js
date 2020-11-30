@@ -37,22 +37,17 @@ const path = require("path");
       message: testSummary.toFormattedMessage(),
     };
 
-    const conclusion = testSummary.annotations.length === 0 ? "success" : "failure";
     testSummary.annotations = [annotation, ...testSummary.annotations];
 
     const pullRequest = github.context.payload.pull_request;
-    const link = (pullRequest && pullRequest.html_url) || github.context.ref;
-    const status = "completed";
-    const head_sha =
-      (pullRequest && pullRequest.head.sha) || github.context.sha;
+    const head_sha = (pullRequest && pullRequest.head.sha) || github.context.sha;
     const annotations = testSummary.annotations;
 
     const createCheckRequest = {
       ...github.context.repo,
       name,
       head_sha,
-      status,
-      conclusion,
+      conclusion: "success",
       output: {
         title: name,
         summary: testSummary.toFormattedMessage(),
