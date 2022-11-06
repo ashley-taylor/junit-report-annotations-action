@@ -11,10 +11,6 @@ inputs:
     description: glob to junit xml files
     required: true
     default: "**/TEST-*.xml"
-  includeSummary:
-    description: include summary annotation
-    required: true
-    default: true
   numFailures:
     description: max number of failed tests to include
     required: true

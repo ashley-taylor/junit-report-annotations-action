@@ -2,13 +2,12 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 const glob = require("@actions/glob");
 const parser = require("xml2js");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs/promises");
+const path = require("node:path");
 
 (async () => {
   try {
     const inputPath = core.getInput("path");
-    const includeSummary = core.getInput("includeSummary");
     const numFailures = core.getInput("numFailures");
     const accessToken = core.getInput("access-token");
     const name = core.getInput("name");
@@ -179,7 +178,7 @@ class TestSummary {
  * @returns {Promise<[JSON]>} list of test suites in JSON
  */
 async function readTestSuites(file) {
-  const data = await fs.promises.readFile(file);
+  const data = await fs.readFile(file);
   const json = await parser.parseStringPromise(data);
 
   if (json.testsuites) {
@@ -224,7 +223,7 @@ async function findTestLocation(testReportFile, testcase) {
   }
   let line = 0;
   if (bestFilePath !== undefined) {
-    const file = await fs.promises.readFile(bestFilePath, {
+    const file = await fs.readFile(bestFilePath, {
       encoding: "utf-8",
     });
     //TODO: make this better won't deal with methods with arguments etc
