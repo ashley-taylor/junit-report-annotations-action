@@ -15284,7 +15284,7 @@ var require_xml2js = __commonJS({
   }
 });
 
-// index.cjs
+// index.js
 var core = require_core();
 var github = require_github();
 var glob = require_glob();
@@ -15337,8 +15337,8 @@ var path = require("node:path");
         annotations
       }
     };
-    const octokit = new github.GitHub(accessToken);
-    await octokit.checks.create(createCheckRequest);
+    const octokit = github.getOctokit(accessToken);
+    await octokit.rest.checks.create(createCheckRequest);
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -15372,7 +15372,7 @@ var TestSummary = class {
     if (this.maxNumFailures !== -1 && this.annotations.length >= this.maxNumFailures) {
       return;
     }
-    const { filePath, line } = await findTestLocation(file, testcase);
+    const { filePath, line } = await module.exports.findTestLocation(file, testcase);
     this.annotations.push({
       path: filePath,
       start_line: line,

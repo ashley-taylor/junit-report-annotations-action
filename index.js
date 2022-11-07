@@ -59,8 +59,8 @@ const path = require("node:path");
       },
     };
 
-    const octokit = new github.GitHub(accessToken);
-    await octokit.checks.create(createCheckRequest);
+    const octokit = github.getOctokit(accessToken);
+    await octokit.rest.checks.create(createCheckRequest);
   } catch (error) {
     core.setFailed(error.message);
   }
