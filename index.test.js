@@ -1,6 +1,6 @@
 const index = require("./index");
 const path = require("path");
-const fs = require("fs").promises;
+const fs = require("fs/promises");
 
 describe("find test location", () => {
   let testReportFile;
@@ -246,7 +246,7 @@ describe('TestSummary', () => {
     });
 
     it('should call handle test cases for all', async () => {
-      spyOn(testSummary, 'handleTestCase');
+      jest.spyOn(testSummary, "handleTestCase");
 
       const testcase1 = { t1: '' };
       const testcase2 = { t2: '' };
@@ -280,9 +280,9 @@ describe('TestSummary', () => {
         }]
       };
 
-      spyOn(index, 'findTestLocation').and.returnValue({
-        filePath: '/path/of/file',
-        line: 42
+      jest.spyOn(index, "findTestLocation").mockReturnValue({
+        filePath: "/path/of/file",
+        line: 42,
       });
 
       await testSummary.handleTestCase(testcase, 'file');
@@ -308,9 +308,9 @@ describe('TestSummary', () => {
         failure: [{}]
       };
 
-      spyOn(index, 'findTestLocation').and.returnValue({
-        filePath: '/path/of/file',
-        line: 42
+      jest.spyOn(index, "findTestLocation").mockReturnValue({
+        filePath: "/path/of/file",
+        line: 42,
       });
 
       await testSummary.handleTestCase(testcase, 'file');
