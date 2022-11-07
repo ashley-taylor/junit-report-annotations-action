@@ -8,28 +8,24 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/gallium
       - run: npm ci
+      - run: npm run build
       - run: npm test
 
   # Run this action on itself. Even if there is no JUnit reports, the action should run silently without errors.
-
-  ubuntu-action-tests:
-    runs-on: ubuntu-latest
+  action-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: ./
         with:
-          name: "unbuntu unit tests"
-          access-token: ${{ secrets.GITHUB_TOKEN }}
-          path: "**/TEST-*.xml"
-
-  macos-action-tests:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: ./
-        with:
-          name: "macos unit tests"
+          name: ${{ matrix.os }} unit tests
           access-token: ${{ secrets.GITHUB_TOKEN }}
           path: "**/TEST-*.xml"
