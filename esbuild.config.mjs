@@ -13,7 +13,6 @@ import { analyzeMetafile, build } from "esbuild";
       platform: "node",
       target: ["node16"],
       format: "cjs",
-      sourcemap: "external",
       treeShaking: true,
     });
 

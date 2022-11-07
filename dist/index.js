@@ -15294,7 +15294,7 @@ var path = require("node:path");
 (async () => {
   try {
     const inputPath = core.getInput("path");
-    const numFailures = core.getInput("numFailures");
+    const numFailures = parseInt(core.getInput("numFailures"));
     const accessToken = core.getInput("access-token");
     const name = core.getInput("name");
     const globber = await glob.create(inputPath, {
@@ -15321,7 +15321,6 @@ var path = require("node:path");
     const conclusion = testSummary.annotations.length === 0 ? "success" : "failure";
     testSummary.annotations = [annotation, ...testSummary.annotations];
     const pullRequest = github.context.payload.pull_request;
-    const link = pullRequest && pullRequest.html_url || github.context.ref;
     const status = "completed";
     const head_sha = pullRequest && pullRequest.head.sha || github.context.sha;
     const annotations = testSummary.annotations;
@@ -15340,6 +15339,8 @@ var path = require("node:path");
     const octokit = github.getOctokit(accessToken);
     await octokit.rest.checks.create(createCheckRequest);
   } catch (error) {
+    console.error(error.message);
+    console.error(error.stack);
     core.setFailed(error.message);
   }
 })();
