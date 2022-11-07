@@ -40,7 +40,6 @@ const path = require("node:path");
     testSummary.annotations = [annotation, ...testSummary.annotations];
 
     const pullRequest = github.context.payload.pull_request;
-    const link = (pullRequest && pullRequest.html_url) || github.context.ref;
     const status = "completed";
     const head_sha =
       (pullRequest && pullRequest.head.sha) || github.context.sha;
@@ -62,6 +61,8 @@ const path = require("node:path");
     const octokit = github.getOctokit(accessToken);
     await octokit.rest.checks.create(createCheckRequest);
   } catch (error) {
+    console.error(error.message)
+    console.error(error.stack)
     core.setFailed(error.message);
   }
 })();
