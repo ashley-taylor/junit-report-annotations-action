@@ -14,7 +14,7 @@ inputs:
   numFailures:
     description: max number of failed tests to include
     required: true
-    default: 10
+    default: "10"
   name:
     description: Name of the Check in the github actions UI
     required: true

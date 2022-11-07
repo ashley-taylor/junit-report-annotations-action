@@ -8,7 +8,7 @@ const path = require("node:path");
 (async () => {
   try {
     const inputPath = core.getInput("path");
-    const numFailures = core.getInput("numFailures");
+    const numFailures = parseInt(core.getInput("numFailures"));
     const accessToken = core.getInput("access-token");
     const name = core.getInput("name");
     const globber = await glob.create(inputPath, {
