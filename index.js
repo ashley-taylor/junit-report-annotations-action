@@ -60,6 +60,7 @@ const path = require("path");
       },
     };
 
+    core.setOutput("summary", testSummary.toFormattedMessage());
     const octokit = new github.GitHub(accessToken);
     await octokit.checks.create(createCheckRequest);
   } catch (error) {

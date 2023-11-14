@@ -1,4 +1,6 @@
 const index = require("./index");
+const process = require("process");
+const cp = require("child_process");
 const path = require("path");
 const fs = require("fs").promises;
 
@@ -326,6 +328,41 @@ describe('TestSummary', () => {
         message: 'Junit test dummyTest failed',
         raw_details: 'No details'
       }]);
+    });
+  });
+});
+
+describe('action logic', () => {
+  // Setup the necessary mocks
+  const token = 'dummyToken';
+  const inputPath = '**/TEST-*.xml';
+  const includeSummary = true;
+  const numFailures = 10;
+  const name = 'Junit Results';
+  const repo = 'foo/bar';
+  const ref = 'refs/heads/some-ref';
+  const sha = '1234567890123456789012345678901234567890';
+
+  beforeAll(() => {
+    process.env['INPUT_ACCESS-TOKEN'] = token;
+    process.env['INPUT_PATH'] = inputPath;
+    process.env['INPUT_INCLUDESUMMARY'] = includeSummary;
+    process.env['INPUT_NUMFAILURES'] = numFailures;
+    process.env['INPUT_NAME'] = name;
+    process.env['GITHUB_REPOSITORY'] = repo;
+    process.env['GITHUB_REF'] = ref;
+    process.env['GITHUB_SHA'] = sha;
+  });
+
+  it('should provide "summary" output', async done => {
+    const ip = path.join(__dirname, 'index.js');
+    cp.exec(`node ${ip}`, {env: process.env}, (error, stdout, stderr) => {
+      try {
+        expect(stdout).toContain("::set-output name=summary::Junit Results ran 3 in 0.132 seconds 1 Errored, 1 Failed, 0 Skipped");
+        done();
+      } catch(error) {
+        done(error);
+      }
     });
   });
 });
